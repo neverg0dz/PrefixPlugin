@@ -1,17 +1,28 @@
 package dev.nevergodz.prefixplugin;
 
+import dev.nevergodz.prefixplugin.commands.PrefixCommand;
+import dev.nevergodz.prefixplugin.managers.PrefixManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PrefixPlugin extends JavaPlugin {
 
+    private PrefixManager prefixManager;
+
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
+        prefixManager = new PrefixManager(this);
+        getCommand("prefix").setExecutor(new PrefixCommand(prefixManager));
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
     }
+
+
+    public PrefixManager getPrefixManager() {
+        return prefixManager;
+    }
+
 }
