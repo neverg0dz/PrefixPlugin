@@ -1,5 +1,5 @@
 name: PrefixPlugin
-version: '${version}'
+version: '1.0'
 main: dev.nevergodz.prefixplugin.PrefixPlugin
 api-version: 1.12.2
 
