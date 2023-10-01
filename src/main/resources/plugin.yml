@@ -1,0 +1,9 @@
+name: PrefixPlugin
+version: '${version}'
+main: dev.nevergodz.prefixplugin.PrefixPlugin
+api-version: 1.12.2
+
+commands:
+  prefix:
+    description:
+    usage: /prefix <list|add|remove> [ник/UUID] [префикс]

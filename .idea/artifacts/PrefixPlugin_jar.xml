@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PrefixPlugin:jar">
+    <output-path>$PROJECT_DIR$/../../NeverMine/test/plugins</output-path>
+    <root id="archive" name="PrefixPlugin.jar">
+      <element id="module-output" name="PrefixPlugin.main" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+    </root>
+  </artifact>
+</component>

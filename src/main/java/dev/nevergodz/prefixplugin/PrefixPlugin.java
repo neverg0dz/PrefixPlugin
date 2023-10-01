@@ -13,6 +13,9 @@ public final class PrefixPlugin extends JavaPlugin {
     public void onEnable() {
         prefixManager = new PrefixManager(this);
         getCommand("prefix").setExecutor(new PrefixCommand(prefixManager));
+
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
     }
 
     @Override

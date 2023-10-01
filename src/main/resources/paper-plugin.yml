@@ -1,3 +1,0 @@
-name: PrefixPlugin
-version: '${version}'
-main: dev.nevergodz.prefixplugin.PrefixPlugin

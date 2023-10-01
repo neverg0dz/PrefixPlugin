@@ -1,28 +1,38 @@
 package dev.nevergodz.prefixplugin.managers;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class PrefixManager {
 
     private final JavaPlugin plugin;
+    private final FileConfiguration config;
     private final Map<Player, String> playerPrefixes = new HashMap<>();
 
     public PrefixManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.config = plugin.getConfig();
     }
 
     public void listPrefixes(Player player) {
-        player.sendMessage("Ваши префиксы:");
-        if (playerPrefixes.containsKey(player)) {
-            for (String prefix : playerPrefixes.get(player).split(",")) {
-                player.sendMessage((prefix));
-            }
+        player.sendMessage("Все существующие префиксы:");
+
+        // Получаем список всех префиксов из конфигурационного файла
+        Set<String> prefixIds = config.getConfigurationSection("prefixes").getKeys(false);
+
+        if (prefixIds.isEmpty()) {
+            player.sendMessage("Нет доступных префиксов.");
         } else {
-            player.sendMessage("У вас нет префиксов.");
+            for (String prefixId : prefixIds) {
+                String prefixName = config.getString("prefixes." + prefixId + ".name");
+                String prefixDisplayName = config.getString("prefixes." + prefixId + ".displayName");
+                player.sendMessage(prefixId + ": " + prefixName + " (" + prefixDisplayName + ")");
+            }
         }
     }
 
@@ -80,6 +90,4 @@ public class PrefixManager {
         playerPrefixes.put(target, newPrefixes.toString());
         sender.sendMessage("Префикс с ID: " + prefixId + " успешно удален у " + target.getName());
     }
-
-
 }
