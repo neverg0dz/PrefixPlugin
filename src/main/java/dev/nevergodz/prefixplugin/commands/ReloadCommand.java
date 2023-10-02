@@ -16,7 +16,6 @@ public class ReloadCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("prefixreload")) {
-            // Перезагрузка конфигурации
             plugin.reloadConfig();
             sender.sendMessage("Конфиг перезагружен");
             return true;
