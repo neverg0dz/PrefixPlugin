@@ -1,31 +1,36 @@
 package dev.nevergodz.prefixplugin.managers;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
-import java.util.UUID;
 
 public class PrefixManager {
 
     private final JavaPlugin plugin;
     private final FileConfiguration config;
-    private final Map<Player, String> playerPrefixes = new HashMap<>();
 
     public PrefixManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfig();
     }
 
+    public void setPlayerPrefix(Player player, String prefix) {
+        // Установка суффикса в табе
+        setTabSuffix(player, prefix);
+
+        // Установка префикса над головой
+        sendPrefixAboveHead(player, prefix);
+    }
+
     public void listPrefixes(Player player) {
         player.sendMessage("Все существующие префиксы:");
 
-        // Получаем список всех префиксов из конфигурационного файла
         Set<String> prefixIds = config.getConfigurationSection("prefixes").getKeys(false);
 
         if (prefixIds.isEmpty()) {
@@ -39,58 +44,51 @@ public class PrefixManager {
         }
     }
 
-    public void addPrefix(Player sender, String targetName, String prefixId) {
-        Player target = plugin.getServer().getPlayer(targetName);
+    public void removePrefix(Player sender, Player target, String prefixId) {
+        // Удаление префикса у игрока
+        removePlayerPrefix(target);
 
-        if (target == null) {
-            sender.sendMessage("Игрок " + targetName + " не найден.");
-            return;
-        }
-
-        String currentPrefixes = playerPrefixes.getOrDefault(target, "");
-        if (!currentPrefixes.isEmpty()) {
-            currentPrefixes += ",";
-        }
-        currentPrefixes += prefixId;
-        playerPrefixes.put(target, currentPrefixes);
-        sender.sendMessage("Префикс c ID: " + prefixId + " успешно установлен для " + target.getName());
+        sender.sendMessage("Префикс с ID: " + prefixId + " успешно удален у " + target.getName());
     }
 
-    public void removePrefix(Player sender, String targetName, String prefixId) {
-        Player target = plugin.getServer().getPlayer(targetName);
+    private void setTabSuffix(Player player, String suffix) {
+        PacketContainer packet = ProtocolLibrary.getProtocolManager()
+                .createPacket(PacketType.Play.Server.SCOREBOARD_TEAM);
 
-        if (target == null) {
-            sender.sendMessage("Игрок с именем " + targetName + " не найден.");
-            return;
+        // Устанавливаем имя команды (ник игрока)
+        packet.getStrings().write(0, player.getName());
+        // Устанавливаем суффикс для отображения в табе
+        packet.getStrings().write(2, suffix);
+
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+    }
 
-        if (!playerPrefixes.containsKey(target)) {
-            sender.sendMessage("Игрок " + target.getName() + " не имеет префиксов.");
-            return;
+    private void sendPrefixAboveHead(Player player, String prefix) {
+        // Отправка пакета для отображения префикса над головой
+        PacketContainer packet = ProtocolLibrary.getProtocolManager()
+                .createPacket(PacketType.Play.Server.SCOREBOARD_TEAM);
+
+        // Устанавливаем уникальное имя команды (нужно для разных префиксов у разных игроков)
+        packet.getStrings().write(0, player.getUniqueId().toString());
+        // Устанавливаем название команды (для отображения префикса)
+        packet.getStrings().write(2, prefix);
+
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+    }
 
-        String currentPrefixes = playerPrefixes.get(target);
-        String[] prefixes = currentPrefixes.split(",");
+    private void removePlayerPrefix(Player player) {
+        // Удаляем суффикс в табе
+        setTabSuffix(player, "");
 
-        StringBuilder newPrefixes = new StringBuilder();
-        boolean removed = false;
-        for (String prefix : prefixes) {
-            if (!prefix.equals(prefixId)) {
-                if (newPrefixes.length() > 0) {
-                    newPrefixes.append(",");
-                }
-                newPrefixes.append(prefix);
-            } else {
-                removed = true;
-            }
-        }
-
-        if (!removed) {
-            sender.sendMessage("Игрок " + target.getName() + " не имеет префикса с ID: " + prefixId);
-            return;
-        }
-
-        playerPrefixes.put(target, newPrefixes.toString());
-        sender.sendMessage("Префикс с ID: " + prefixId + " успешно удален у " + target.getName());
+        // Отправляем пустой префикс над головой
+        sendPrefixAboveHead(player, "");
     }
 }

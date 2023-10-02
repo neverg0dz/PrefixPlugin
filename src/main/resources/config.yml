@@ -3,8 +3,14 @@ prefixes:
     name: xpepelok
     displayName: PEPEL
     description: "eto prefix pepla"
-
+    color: "#FF0000"
   '2':
     name: nevergodz
     displayName: NEVER
     description: "eto prefix never'a"
+    color: "#FF0000"
+  '3':
+    name: seper
+    displayName: SEPER
+    description: "eto prefix sepera"
+    color: "#FF0000"

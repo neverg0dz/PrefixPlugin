@@ -32,7 +32,7 @@ public class PrefixCommand implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("add")) {
                     String targetName = args[1];
                     String prefixId = args[2];
-                    prefixManager.addPrefix(player, targetName, prefixId);
+                    prefixManager.setTabSuffix(player, targetName, prefixId);
                 } else if (args[0].equalsIgnoreCase("remove")) {
                     String targetName = args[1];
                     String prefixId = args[2];
@@ -42,11 +42,11 @@ public class PrefixCommand implements CommandExecutor {
                     player.sendMessage("/prefix list - для просмотра ваших префиксов.");
                     player.sendMessage("/prefix add <ник/UUID> <префикс> - для добавления префикса.");
                     player.sendMessage("/prefix remove <ник/UUID> <префикс> - для удаления префикса.");
-
                 }
             }
             return true;
         }
         return false;
     }
+
 }
