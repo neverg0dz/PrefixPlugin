@@ -1,3 +1,8 @@
+database:
+  url: jdbc:mysql://localhost:3306/neverdb
+  username: never
+  password: )(DFUS()*FUSDJF*(OSE*(F)UJFG)(*DFUS(*FYH(*SYHG(8hfshfg98shf-
+
 prefixes:
   '1':
     name: xpepelok

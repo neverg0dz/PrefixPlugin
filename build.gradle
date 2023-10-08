@@ -22,7 +22,7 @@ repositories {
 dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.12.2-R0.1-SNAPSHOT"
     implementation "org.projectlombok:lombok:1.18.22"
-    implementation 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    implementation "com.zaxxer:HikariCP:4.0.3"
 }
 
 def targetJavaVersion = 8

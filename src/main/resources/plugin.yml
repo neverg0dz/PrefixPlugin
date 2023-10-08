@@ -7,6 +7,3 @@ commands:
   prefix:
     description:
     usage: /prefix <list|add|remove> [ник/UUID] [префикс]
-  prefixreload:
-    description:
-    usage: /prefixreload

@@ -1,11 +1,8 @@
-package dev.nevergodz.prefixplugin.managers;
+package dev.nevergodz.prefixplugin.manager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,14 +10,22 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PrefixManager {
-
-    private final JavaPlugin plugin;
+    private final Map<UUID, String> playerPrefixes = new HashMap<>();
     private final FileConfiguration config;
-    private final Map<Player, String> playerPrefixes = new HashMap<>();
+    private final DatabaseManager databaseManager;
 
-    public PrefixManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.config = plugin.getConfig();
+    public PrefixManager(FileConfiguration config, DatabaseManager databaseManager) {
+        this.config = config;
+        this.databaseManager = databaseManager;
+    }
+
+    public void setPrefix(UUID uuid, String prefixId) {
+        databaseManager.setPrefix(uuid, prefixId);
+        playerPrefixes.put(uuid, prefixId);
+    }
+
+    public String getPrefix(UUID playerUUID) {
+        return playerPrefixes.get(playerUUID);
     }
 
     public void setPlayerListName(Player player, String displayName) {
@@ -36,7 +41,6 @@ public class PrefixManager {
                 return prefixId;
             }
         }
-
         return null;
     }
 
@@ -56,6 +60,10 @@ public class PrefixManager {
         }
     }
 
+    public Player getPlayerByNameOrUUID(String nameOrUUID) {
+        return Bukkit.getPlayer(nameOrUUID);
+    }
+
     public void addPrefix(Player sender, String targetName, String name) {
         String prefixId = findPrefixIdByName(name);
 
@@ -64,61 +72,37 @@ public class PrefixManager {
             return;
         }
 
-        Player target = plugin.getServer().getPlayer(targetName);
+        Player target = getPlayerByNameOrUUID(targetName);
 
         if (target == null) {
             sender.sendMessage("Игрок " + targetName + " не найден.");
             return;
         }
 
-        String currentPrefixes = playerPrefixes.getOrDefault(target, "");
-        if (!currentPrefixes.isEmpty()) {
-            currentPrefixes += ",";
-        }
-        currentPrefixes += prefixId;
-        playerPrefixes.put(target, currentPrefixes); // Добавьте эту строку
-
         String displayName = config.getString("prefixes." + prefixId + ".displayName");
-        target.setPlayerListName(target.getName() + " " + displayName);
+
+        setPrefix(target.getUniqueId(), prefixId);
 
         sender.sendMessage("Префикс " + name + " установлен для " + target.getName());
     }
 
-
     public void removePrefix(Player sender, String targetName, String prefixId) {
-        Player target = plugin.getServer().getPlayer(targetName);
+        Player target = getPlayerByNameOrUUID(targetName);
 
         if (target == null) {
             sender.sendMessage("Игрок " + targetName + " не найден.");
             return;
         }
 
-        String currentPrefixes = playerPrefixes.getOrDefault(target, "");
-        String[] prefixes = currentPrefixes.split(",");
+        String playerPrefix = getPrefix(target.getUniqueId());
 
-        boolean removed = false;
-        StringBuilder newPrefixes = new StringBuilder();
-        for (String playerPrefix : prefixes) {
-            if (!playerPrefix.equals(prefixId)) {
-                if (newPrefixes.length() > 0) {
-                    newPrefixes.append(",");
-                }
-                newPrefixes.append(playerPrefix);
-            } else {
-                removed = true;
-            }
-        }
-
-        if (!removed) {
+        if (playerPrefix == null || !playerPrefix.equals(prefixId)) {
             sender.sendMessage("Игрок " + target.getName() + " не имеет префикса: " + prefixId);
-        } else {
-            // Обновить сообщение в чате с новыми префиксами
-            setPlayerListName(target, target.getName() + " " + newPrefixes.toString());
-
-            sender.sendMessage("Префикс: " + prefixId + " удален у " + target.getName());
+            return;
         }
 
-        playerPrefixes.put(target, newPrefixes.toString());
-        setPlayerListName(target, target.getName());
+        playerPrefixes.remove(target.getUniqueId());
+
+        sender.sendMessage("Префикс: " + prefixId + " удален у " + target.getName());
     }
 }
