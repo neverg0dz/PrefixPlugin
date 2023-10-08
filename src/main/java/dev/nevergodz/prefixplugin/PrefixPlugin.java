@@ -25,14 +25,11 @@ public class PrefixPlugin extends JavaPlugin {
         String username = config.getString("database.username");
         String password = config.getString("database.password");
 
-// Создаем экземпляр DatabaseManager для работы с базой данных
         databaseManager = new DatabaseManager(jdbcUrl, username, password);
 
 
-        // Создаем экземпляр PrefixManager и передаем ему DatabaseManager
         prefixManager = new PrefixManager(config, databaseManager);
 
-        // Регистрируем команды и передаем PrefixManager
         getCommand("prefix").setExecutor(new PrefixCommand(prefixManager));
         getCommand("prefixes").setExecutor(new PrefixesCommand(prefixManager));
 
@@ -43,7 +40,7 @@ public class PrefixPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Здесь можете выполнить дополнительные действия при выключении плагина
+
     }
 
     public void registerListeners(Listener... listeners) {

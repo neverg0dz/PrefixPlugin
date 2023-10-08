@@ -14,16 +14,13 @@ public class DatabaseManager {
     private final HikariDataSource dataSource;
 
     public DatabaseManager(String jdbcUrl, String username, String password) {
-        // Настройка HikariCP
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(jdbcUrl);
         hikariConfig.setUsername(username);
         hikariConfig.setPassword(password);
 
-        // Настройка пула соединений
         dataSource = new HikariDataSource(hikariConfig);
 
-        // Создание таблицы, если она не существует
         createTables();
     }
 
