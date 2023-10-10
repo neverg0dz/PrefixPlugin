@@ -3,7 +3,8 @@ package dev.nevergodz.prefixplugin;
 import dev.nevergodz.prefixplugin.command.PrefixCommand;
 import dev.nevergodz.prefixplugin.command.PrefixesCommand;
 import dev.nevergodz.prefixplugin.listener.PlayerJoinListener;
-import dev.nevergodz.prefixplugin.manager.DatabaseManager;
+import dev.nevergodz.prefixplugin.manager.DatabaseImpl;
+import dev.nevergodz.prefixplugin.manager.DatabaseImpl;
 import dev.nevergodz.prefixplugin.manager.PrefixManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PrefixPlugin extends JavaPlugin {
 
     private PrefixManager prefixManager;
-    private DatabaseManager databaseManager;
+    private DatabaseImpl databaseManager;
 
     @Override
     public void onEnable() {
@@ -21,11 +22,19 @@ public class PrefixPlugin extends JavaPlugin {
         this.saveDefaultConfig();
         FileConfiguration config = this.getConfig();
 
-        String jdbcUrl = config.getString("database.url");
-        String username = config.getString("database.username");
-        String password = config.getString("database.password");
+        String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/neverdb";
+        String username = "never";
+        String password = ")(DFUS()*FUSDJF*(OSE*(F)UJFG)(*DFUS(*FYH(*SYHG(8hfshfg98shf-";
 
-        databaseManager = new DatabaseManager(jdbcUrl, username, password);
+        int colonIndex = jdbcUrl.indexOf(":");
+        int slashIndex = jdbcUrl.indexOf("/");
+        String host = jdbcUrl.substring(colonIndex + 3, slashIndex);
+        int lastColonIndex = jdbcUrl.lastIndexOf(":");
+        int port = Integer.parseInt(jdbcUrl.substring(lastColonIndex + 1, slashIndex));
+        String database = jdbcUrl.substring(slashIndex + 1);
+
+        DatabaseImpl databaseManager = new DatabaseImpl(host, port, database, username, password);
+
 
 
         prefixManager = new PrefixManager(config, databaseManager);

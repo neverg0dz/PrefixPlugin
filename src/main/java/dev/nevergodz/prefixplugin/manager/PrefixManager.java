@@ -1,5 +1,6 @@
 package dev.nevergodz.prefixplugin.manager;
 
+import dev.nevergodz.prefixplugin.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -12,15 +13,15 @@ import java.util.UUID;
 public class PrefixManager {
     private final Map<UUID, String> playerPrefixes = new HashMap<>();
     private final FileConfiguration config;
-    private final DatabaseManager databaseManager;
+    private final DatabaseImpl DatabaseImpl;
 
-    public PrefixManager(FileConfiguration config, DatabaseManager databaseManager) {
+
+    public PrefixManager(FileConfiguration config, DatabaseImpl Databaseimpl) {
         this.config = config;
-        this.databaseManager = databaseManager;
+        this.DatabaseImpl = Databaseimpl;
     }
 
     public void setPrefix(UUID uuid, String prefixId) {
-        databaseManager.setPrefix(uuid, prefixId);
         playerPrefixes.put(uuid, prefixId);
     }
 
