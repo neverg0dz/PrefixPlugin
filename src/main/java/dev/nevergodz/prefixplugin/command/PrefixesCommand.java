@@ -28,7 +28,6 @@ public class PrefixesCommand implements CommandExecutor {
                 prefixManager.listPrefixes(player);
             } else if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
                 String prefixId = args[1];
-                // Устанавливаем выбранный префикс
                 prefixManager.addPrefix(player, player.getName(), prefixId);
             } else {
                 sender.sendMessage("Неверный формат команды. Используйте /prefixes или /prefixes set <id>.");
